@@ -1,4 +1,4 @@
-name: Product Store CI/CD Pipeline
+name: E-Commerce QA Automation Pipeline
 
 on:
   push:
@@ -7,16 +7,20 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
-    name: Selenide and Cucumber Tests
+  # ------------------------
+  # 1. UI TESTS (BDD + Selenide)
+  # ------------------------
+  ui-tests:
+    name: 🧪 UI Tests
     runs-on: ubuntu-latest
+    continue-on-error: false
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: docker build -t my-maven-app .
+      - name: Build Docker image for tests
+        run: docker build -t ecommerce_ui_tests .
 
       - name: Run tests with Docker Compose
         run: |
@@ -31,10 +35,13 @@ jobs:
           name: allure-results
           path: allure-results
 
+  # ------------------------
+  # 2. PERFORMANCE TESTS (JMeter)
+  # ------------------------
   performance:
-    name: JMeter Performance Test
+    name: 📊 JMeter Load Test
     runs-on: ubuntu-latest
-    needs: build-and-test
+    needs: ui-tests
     if: always()
 
     steps:
@@ -60,28 +67,32 @@ jobs:
   # 3. SECURITY TESTS (OWASP ZAP)
   # ------------------------
   security:
-    name: Run OWASP ZAP Scan
+    name: 🔒 OWASP ZAP Scan
     runs-on: ubuntu-latest
-    needs: build-and-test
+    needs: ui-tests
     if: always()
 
     steps:
-      - name: Prepare reports folder
-        run: mkdir -p reports
-
-      - name: Run OWASP ZAP Scan
+      - name: Prepare security report folder
         run: |
-          docker run --rm -u root -v $(pwd)/reports:/zap/wrk/:rw \
-            zaproxy/zap-stable \
-            zap-baseline.py \
-              -t https://https://www.demoblaze.com/ \
-              -r zap_report.html || true
+          mkdir -p security/security_report
+          chmod 777 security/security_report
+
+      - name: Run ZAP Baseline Scan
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/security/security_report:/zap/wrk:rw \
+            ghcr.io/zaproxy/zaproxy:stable  zap-baseline.py \
+            -t https://www.demoblaze.com \
+            -r zap-report.html \
+            -J zap-report.json \
+            -I
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
         with:
-          name: ZAP Security Report
-          path: reports/zap_report.html
+          name: zap-report
+          path: security/security_report/
 
   # ------------------------
   # 4. DEPLOY ALLURE REPORT
@@ -89,7 +100,7 @@ jobs:
   deploy-allure-report:
     name: 🚀 Publish Allure Report
     runs-on: ubuntu-latest
-    needs: build-and-test
+    needs: ui-tests
     if: always()
 
     steps:
@@ -115,7 +126,7 @@ jobs:
       - name: Deploy Allure report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GH_PAT }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: allure-report
           publish_branch: gh-pages
           destination_dir: allure-report
@@ -140,7 +151,7 @@ jobs:
       - name: Deploy JMeter report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GH_PAT }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: jmeter-results/html-report
           publish_branch: gh-pages
           destination_dir: jmeter-report
@@ -156,13 +167,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Download ZAP report artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: zap-report
+          path: security/security_report
+
       - name: Deploy ZAP report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GH_PAT }}
-          publish_dir: ./reports
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: security/security_report
           publish_branch: gh-pages
-          force_orphan: true
+          destination_dir: zap-report
+          force_orphan: false
 
 
 
@@ -173,70 +191,70 @@ jobs:
   notify-slack:
     name: 🔔 Slack Notification
     runs-on: ubuntu-latest
-    needs: [ build-and-test, performance, security, deploy-allure-report, deploy-jmeter-report, deploy-zap-report ]
+    needs: [ ui-tests, performance, security, deploy-allure-report, deploy-jmeter-report, deploy-zap-report ]
     if: always()
 
     steps:
       - name: Send Slack notification
         run: |
-         # Default values
-         STATUS="passed"
-         COLOR="good"
-         EMOJI="✅"
-         TITLE="*Product Store Pipeline Passed*"
-                                
-         # If any upstream job failed because of test/assertion failures
-         if [[ "${{ needs.build-and-test.result }}" == "failure" || \
-               "${{ needs.performance.result }}" == "failure" || \
-               "${{ needs.security.result }}" == "failure" ]]; then
-           STATUS="Build process failed"
-           COLOR="warning"
-           EMOJI="⚠️"
-           TITLE="*Product Store Completed with Failures*"
-         fi
-                                
-         # If any upstream job failed due to infra (cancelled or error)
-          if [[ "${{ needs.build-and-test.result }}" == "cancelled" || \
-               "${{ needs.performance.result }}" == "cancelled" || \
-               "${{ needs.security.result }}" == "cancelled" || \
-               "${{ needs.build-and-test.result }}" == "skipped" || \
-               "${{ needs.performance.result }}" == "skipped" || \
-               "${{ needs.security.result }}" == "skipped" ]]; then
-            STATUS="Build process failed"
-            COLOR="danger"
-            EMOJI="❌"
-            TITLE="*Product Store Pipeline Failed*"
+          # Default values
+          STATUS="success"
+          COLOR="good"
+          EMOJI="✅"
+          TITLE="*E-Commerce QA Pipeline Passed*"
+          
+          # If any upstream job failed because of test/assertion failures
+          if [[ "${{ needs.ui-tests.result }}" == "failure" || \
+                "${{ needs.performance.result }}" == "failure" || \
+                "${{ needs.security.result }}" == "failure" ]]; then
+            STATUS="completed_with_failures"
+            COLOR="warning"
+            EMOJI="⚠️"
+            TITLE="*E-Commerce QA Pipeline Completed with Failures*"
           fi
-
-          curl -X POST -H 'Content-type: application/json' --data "{
-            \"attachments\": [
-              {
-                \"color\": \"$COLOR\",
-                \"blocks\": [
-                  {
-                    \"type\": \"section\",
-                    \"text\": {
-                      \"type\": \"mrkdwn\",
-                      \"text\": \"$EMOJI $TITLE\n*Status:* $STATUS\"
-                    }
-                  },
-                  {
-                    \"type\": \"section\",
-                    \"fields\": [
-                      {
-                        \"type\": \"mrkdwn\",
-                        \"text\": \"*Reports:*\\n•https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/index.html\|Allure Report>\\n• <https://nanaquaci.github.io/Phase3-Week8/jmeter-report/|JMeter Report>\\n• <https://nanaquaci.github.io/Phase3-Week8/zap-report/zap-report.html|ZAP Security Report>\"
-                      },
-                      {
-                        \"type\": \"mrkdwn\",
-                        \"text\": \"*Build URL:*\n$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }" ${{ secrets.NEWSLETTER_CHANNEL }}
+          
+          # If any upstream job failed due to infra (cancelled or error)
+           if [[ "${{ needs.ui-tests.result }}" == "cancelled" || \
+                "${{ needs.performance.result }}" == "cancelled" || \
+                "${{ needs.security.result }}" == "cancelled" || \
+                "${{ needs.ui-tests.result }}" == "skipped" || \
+                "${{ needs.performance.result }}" == "skipped" || \
+                "${{ needs.security.result }}" == "skipped" ]]; then
+             STATUS="failed"
+             COLOR="danger"
+             EMOJI="❌"
+             TITLE="*E-Commerce QA Pipeline Failed*"
+           fi
+          
+           curl -X POST -H 'Content-type: application/json' --data "{
+             \"attachments\": [
+               {
+                 \"color\": \"$COLOR\",
+                 \"blocks\": [
+                   {
+                     \"type\": \"section\",
+                     \"text\": {
+                       \"type\": \"mrkdwn\",
+                       \"text\": \"$EMOJI $TITLE\n*Status:* $STATUS\"
+                     }
+                   },
+                   {
+                     \"type\": \"section\",
+                     \"fields\": [
+                       {
+                         \"type\": \"mrkdwn\",
+                         \"text\": \"*Reports:*\\n• <https://nanaquaci.github.io/Phase3-Week8/allure-report/|Allure Report>\\n• <https://nanaquaci.github.io/Phase3-Week8/jmeter-report/|JMeter Report>\\n• <https://nanaquaci.github.io/Phase3-Week8/zap-report/zap-report.html|ZAP Security Report>\"
+                       },
+                       {
+                         \"type\": \"mrkdwn\",
+                         \"text\": \"*Build URL:*\n$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"
+                       }
+                     ]
+                   }
+                 ]
+               }
+             ]
+           }" ${{ secrets.SLACK_WEBHOOK_URL }}
 
   # ------------------------
   # 6. JIRA INTEGRATION (Optional)
@@ -244,19 +262,28 @@ jobs:
   jira-xray:
     name: 📌 Push Results to Jira/Xray
     runs-on: ubuntu-latest
-    needs: [build-and-test]
+    needs: [ui-tests]
     if: always()
 
     steps:
-      - name: Download Allure results
-        uses: actions/download-artifact@v4
-        with:
-          name: allure-results
-          path: allure-results
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Push to Xray
+      # 1. Get Authentication Token from Xray
+      - name: Get Xray Auth Token
+        id: xray-auth
         run: |
-          curl -H "Content-Type: application/json" \
-               -H "Authorization: Bearer ${{ secrets.XRAY_API_TOKEN }}" \
-               --data @allure-results/cucumber.json \
-               https://xray.cloud.getxray.app/api/v2/import/execution/cucumber
+          response=$(curl -s -X POST https://xray.cloud.getxray.app/api/v2/authenticate \
+            -H "Content-Type: application/json" \
+            -d "{ \"client_id\": \"${{ secrets.XRAY_CLIENT_ID }}\", \"client_secret\": \"${{ secrets.XRAY_CLIENT_SECRET }}\" }")
+          token=$(echo $response | tr -d '"')
+          echo "token=$token" >> $GITHUB_OUTPUT
+      
+
+      # 2. Upload Cucumber Results to Xray
+      - name: Push Cucumber Results to Xray
+        run: |
+          curl -s -X POST https://xray.cloud.getxray.app/api/v2/import/execution/cucumber \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ steps.xray-auth.outputs.token }}" \
+            --data-binary @target/cucumber.json
