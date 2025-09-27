@@ -66,9 +66,12 @@ jobs:
   # ------------------------
   # 3. SECURITY TESTS (OWASP ZAP)
   # ------------------------
-  zap_scan:
+  security:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Prepare reports folder
         run: mkdir -p reports
 
@@ -77,7 +80,7 @@ jobs:
           docker run --rm -u root -v $(pwd)/reports:/zap/wrk/:rw \
             zaproxy/zap-stable \
             zap-baseline.py \
-              -t https://https://www.demoblaze.com \
+              -t https://www.saucedemo.com \
               -r zap_report.html || true
 
       - name: Upload ZAP Report
