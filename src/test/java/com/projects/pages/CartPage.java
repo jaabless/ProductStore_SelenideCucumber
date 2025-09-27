@@ -3,6 +3,7 @@ package com.projects.pages;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
 import com.projects.base.BasePage;
+import org.openqa.selenium.By;
 
 import java.time.Duration;
 
@@ -12,6 +13,7 @@ import static com.codeborne.selenide.CollectionCondition.*;
 import static com.codeborne.selenide.Selenide.refresh;
 
 public class CartPage extends BasePage {
+    private final By placeOrderButton = By.cssSelector(".btn-success");
 
     public void openCart() {
         open("/cart.html");
@@ -39,6 +41,9 @@ public class CartPage extends BasePage {
         if (row.exists()) {
             row.$("[onclick*='delete']").click();
         }
+    }
+    public boolean isPlaceOrderEnabled() {
+        return getElement(placeOrderButton).isEnabled();
     }
 
 

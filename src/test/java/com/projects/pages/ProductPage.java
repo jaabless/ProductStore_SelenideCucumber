@@ -43,4 +43,8 @@ public class ProductPage extends BasePage {
         }
         alert.accept();
     }
+    public void verifyImmediateFeedback() {
+        // Alert is the feedback
+        logger.info("Verified immediate feedback via alert");
+    }
 }

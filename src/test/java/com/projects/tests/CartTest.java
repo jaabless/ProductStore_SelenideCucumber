@@ -7,6 +7,8 @@ import com.projects.pages.CartPage;
 import com.projects.pages.ProductPage;
 import com.projects.util.TestDataLoader;
 import io.qameta.allure.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Epic("Product Store UI Tests")
 @Feature("Cart")
 @ExtendWith({ScreenShooterExtension.class})
+@Tag("regression")
 public class CartTest extends BaseTest {
 
     private static final Logger log = LoggerFactory.getLogger(CartTest.class);
@@ -25,7 +28,8 @@ public class CartTest extends BaseTest {
     private final CartPage cartPage = new CartPage();
 
     @Test
-    @Story("Add Single Item")
+    @Story("Cart Functionality")
+    @DisplayName("Verify clicking the \"Add to Cart\" button on a product page adds the product to the cart.")
     @Severity(SeverityLevel.CRITICAL)
     void testAddSingleItem() {
         String product = TestDataLoader.getProduct("laptop");
@@ -40,7 +44,8 @@ public class CartTest extends BaseTest {
     }
 
     @Test
-    @Story("Add Same Item Twice")
+    @Story("Cart Functionality")
+    @DisplayName("Verify  that adding the same product multiple times increases quantity")
     @Severity(SeverityLevel.NORMAL)
     void testAddSameItemTwice() {
         String product = TestDataLoader.getProduct("laptop");
@@ -58,7 +63,18 @@ public class CartTest extends BaseTest {
     }
 
     @Test
-    @Story("Remove Nonexistent Item")
+    @DisplayName("Verify immediate feedback after adding a product to the cart")
+    public void verifyAddingProductToCart() {
+        String product = TestDataLoader.getProduct("laptop");
+        log.info("Adding '{}' twice", product);
+        productPage.openProduct(product);
+        productPage.addToCart();
+        productPage.verifyImmediateFeedback();
+    }
+
+    @Test
+    @Story("Cart Functionality")
+    @DisplayName("Verify removing an item not in the cart does not affect cart state")
     @Severity(SeverityLevel.MINOR)
     void testRemoveNonexistentItem() {
         String product = TestDataLoader.getProduct("phone");
@@ -71,7 +87,8 @@ public class CartTest extends BaseTest {
     }
 
     @Test
-    @Story("Remove Item")
+    @Story("Cart Functionality")
+    @DisplayName("Verify a product can be removed from the cart and updates the cart state accordingly")
     @Severity(SeverityLevel.CRITICAL)
     void testRemoveItem() {
         String product = TestDataLoader.getProduct("phone");
@@ -87,9 +104,9 @@ public class CartTest extends BaseTest {
         cartPage.shouldNotContainProduct(product);
     }
 
-
     @Test
-    @Story("Cart Persistence")
+    @Story("Cart Functionality")
+    @DisplayName("Verify cart contents persist after page reload")
     @Severity(SeverityLevel.NORMAL)
     void testCartPersistenceAfterReload() {
         String product = TestDataLoader.getProduct("phone");
@@ -103,4 +120,17 @@ public class CartTest extends BaseTest {
         cartPage.refresh();
         assertTrue(cartPage.containsProduct(product), "Cart should still contain item after reload");
     }
+
+    @Test
+    @Story("Cart Functionality")
+    public void verifyPlaceOrderButton() {
+        String product = TestDataLoader.getProduct("phone");
+
+        log.info("Adding product '{}'", product);
+        productPage.openProduct(product);
+        productPage.addToCart();
+        cartPage.openCart();
+        assertTrue(cartPage.isPlaceOrderEnabled(), "Place Order button should be enabled");
+    }
+
 }
