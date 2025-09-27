@@ -126,7 +126,7 @@ jobs:
       - name: Deploy Allure report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_PAT }}
           publish_dir: allure-report
           publish_branch: gh-pages
           destination_dir: allure-report
@@ -151,7 +151,7 @@ jobs:
       - name: Deploy JMeter report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_PAT }}
           publish_dir: jmeter-results/html-report
           publish_branch: gh-pages
           destination_dir: jmeter-report
@@ -176,7 +176,7 @@ jobs:
       - name: Deploy ZAP report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_PAT }}
           publish_dir: security/security_report
           publish_branch: gh-pages
           destination_dir: zap-report
@@ -254,7 +254,7 @@ jobs:
                  ]
                }
              ]
-           }" ${{ secrets.SLACK_WEBHOOK_URL }}
+           }" ${{ secrets.NEWSLETTER_CHANNEL }}
 
   # ------------------------
   # 6. JIRA INTEGRATION (Optional)
