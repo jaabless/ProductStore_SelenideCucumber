@@ -170,8 +170,7 @@ jobs:
           github_token: ${{ secrets.GH_PAT }}
           publish_dir: ./reports
           publish_branch: gh-pages
-          destination_dir: zap-report
-          force_orphan: false
+          force_orphan: true
 
 
 
