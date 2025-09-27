@@ -66,10 +66,8 @@ jobs:
     if: always()
 
     steps:
-      - name: Prepare security report folder
-        run: |
-          mkdir -p security/security_report
-          chmod 777 security/security_report
+      - name: Prepare reports folder
+        run: mkdir -p reports
 
       - name: Run OWASP ZAP Scan
         run: |
