@@ -243,7 +243,7 @@ jobs:
                      \"fields\": [
                        {
                          \"type\": \"mrkdwn\",
-                         \"text\": \"*Reports:*\\n• <https://nanaquaci.github.io/Phase3-Week8/allure-report/|Allure Report>\\n• <https://nanaquaci.github.io/Phase3-Week8/jmeter-report/|JMeter Report>\\n• <https://nanaquaci.github.io/Phase3-Week8/zap-report/zap-report.html|ZAP Security Report>\"
+                         \"text\": \"*Reports:*\\n• https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/index.html\\\n• <https://nanaquaci.github.io/Phase3-Week8/jmeter-report/|JMeter Report>\\n• <https://nanaquaci.github.io/Phase3-Week8/zap-report/zap-report.html|ZAP Security Report>\"
                        },
                        {
                          \"type\": \"mrkdwn\",
