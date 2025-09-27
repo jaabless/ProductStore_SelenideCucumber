@@ -89,6 +89,9 @@ jobs:
           name: ZAP Security Report
           path: reports/zap_report.html
 
+      - name: list files
+        run: ls -la reports
+
       - name: Deploy report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
