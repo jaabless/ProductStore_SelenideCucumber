@@ -1,4 +1,4 @@
-name: E-Commerce QA Automation Pipeline
+name: Product Store Pipeline
 
 on:
   push:
@@ -201,7 +201,7 @@ jobs:
           STATUS="success"
           COLOR="good"
           EMOJI="✅"
-          TITLE="*E-Commerce QA Pipeline Passed*"
+          TITLE="*Product Store Pipeline Passed*"
           
           # If any upstream job failed because of test/assertion failures
           if [[ "${{ needs.ui-tests.result }}" == "failure" || \
@@ -209,8 +209,8 @@ jobs:
                 "${{ needs.security.result }}" == "failure" ]]; then
             STATUS="completed_with_failures"
             COLOR="warning"
-            EMOJI="⚠️"
-            TITLE="*E-Commerce QA Pipeline Completed with Failures*"
+            EMOJI="❌"
+            TITLE="*Product Store Pipeline Build process failed*"
           fi
           
           # If any upstream job failed due to infra (cancelled or error)
@@ -223,7 +223,7 @@ jobs:
              STATUS="failed"
              COLOR="danger"
              EMOJI="❌"
-             TITLE="*E-Commerce QA Pipeline Failed*"
+             TITLE="*Product Store Pipeline Failed*"
            fi
           
            curl -X POST -H 'Content-type: application/json' --data "{
@@ -243,7 +243,7 @@ jobs:
                      \"fields\": [
                        {
                          \"type\": \"mrkdwn\",
-                         \"text\": \"*Reports:*\\n• <https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/allure-report/index.html|Allure Report>\\n• <https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/jmeter-report/index.html|JMeter Report>\\n• <https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/zap-report/zap_report.html||ZAP Security Report>\"
+                         \"text\": \"*Reports:*\\n• <https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/allure-report/index.html|Allure Report>\\n• <https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/jmeter-report/index.html|JMeter Report>\\n• <https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/zap-report/zap_report.html|ZAP Security Report>\"
                        },
                        {
                          \"type\": \"mrkdwn\",
