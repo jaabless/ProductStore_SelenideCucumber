@@ -41,7 +41,7 @@ jobs:
 
       - name: List files
         if: always()
-        run: ls -la allure-results cucumber-report.html
+        run: ls -la allure-results cucumber-report
 
   performance:
     name: JMeter Load Test
