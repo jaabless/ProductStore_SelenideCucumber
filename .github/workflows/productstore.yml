@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cucumber-report
-          path: cucumber-report.html
+          path: cucumber-report/cucumber-report
 
       - name: List files
         if: always()
