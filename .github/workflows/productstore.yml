@@ -7,11 +7,8 @@ on:
     branches: [ main ]
 
 jobs:
-  # ------------------------
-  # 1. UI TESTS (BDD + Selenide)
-  # ------------------------
   ui-tests:
-    name: 🧪 UI Tests
+    name: UI Tests
     runs-on: ubuntu-latest
     continue-on-error: false
 
@@ -35,9 +32,13 @@ jobs:
           name: allure-results
           path: allure-results
 
-  # ------------------------
-  # 2. PERFORMANCE TESTS (JMeter)
-  # ------------------------
+      - name: Upload Cucumber Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-report
+          path: cucumber-report.html
+
   performance:
     name: JMeter Load Test
     runs-on: ubuntu-latest
@@ -63,9 +64,6 @@ jobs:
           name: jmeter-results
           path: jmeter-results
 
-  # ------------------------
-  # 3. SECURITY TESTS (OWASP ZAP)
-  # ------------------------
   security:
     name: OWASP ZAP Security Scan
     runs-on: ubuntu-latest
@@ -94,9 +92,6 @@ jobs:
       - name: list files
         run: ls -la reports
 
-  # ------------------------
-  # 4. DEPLOY ALLURE REPORT
-  # ------------------------
   deploy-allure-report:
     name: Publish Allure Report
     runs-on: ubuntu-latest
@@ -181,6 +176,29 @@ jobs:
           publish_branch: gh-pages
           destination_dir: zap-report
           force_orphan: false
+
+  deploy-cucumber-report:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Cucumber reports
+        uses: actions/download-artifact@v4
+        with:
+          name: cucumber-report
+          path: cucumber-report   # this will be a directory
+
+
+      - name: Deploy report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GH_PAT }}
+          publish_dir: cucumber-report
+          publish_branch: gh-pages
+          destination_dir: cucumber-report
 
 
 
