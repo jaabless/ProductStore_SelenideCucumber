@@ -1,4 +1,4 @@
-package com.projects.tests;
+package com.projects.selenideTests;
 
 import com.codeborne.selenide.junit5.ScreenShooterExtension;
 import com.projects.pages.CartPage;
@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Epic("Product Store UI Tests")
-@Feature("Cart")
+@Feature("Product")
 @ExtendWith({ScreenShooterExtension.class})
 @Tag("smoke")
 public class ProductPageTest {

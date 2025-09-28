@@ -1,9 +1,10 @@
-package com.projects.tests;
+package com.projects.selenideTests;
 
 import com.codeborne.selenide.junit5.ScreenShooterExtension;
 import com.projects.base.BaseTest;
 import com.projects.pages.HomePage;
 import io.qameta.allure.*;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Epic("Product Store UI Tests")
 @Feature("Homepage")
 @ExtendWith({ScreenShooterExtension.class})
+@Tag("smoke")
 public class HomePageTest extends BaseTest {
 
     private static final Logger log = LoggerFactory.getLogger(HomePageTest.class);

@@ -1,6 +1,5 @@
-package com.projects.tests;
+package com.projects.selenideTests;
 
-import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.junit5.ScreenShooterExtension;
 import com.projects.base.BaseTest;
 import com.projects.pages.CartPage;
