@@ -39,6 +39,10 @@ jobs:
           name: cucumber-report
           path: cucumber-report.html
 
+      - name: List files
+        if: always()
+        run: ls -la allure-results cucumber-report.html
+
   performance:
     name: JMeter Load Test
     runs-on: ubuntu-latest
@@ -261,7 +265,7 @@ jobs:
                      \"fields\": [
                        {
                          \"type\": \"mrkdwn\",
-                         \"text\": \"*Reports:*\\n• <https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/allure-report/index.html|Allure Report>\\n• <https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/jmeter-report/index.html|JMeter Report>\\n• <https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/zap-report/zap_report.html|ZAP Security Report>\"
+                         \"text\": \"*Reports:*\\n• <https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/allure-report/index.html|Allure Report>\\n• <https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/jmeter-report/index.html|JMeter Report>\\n• <https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/zap-report/zap_report.html|ZAP Security Report>\\n• <https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/cucumber-report/cucumber-report.html|Cucumber Report>\"
                        },
                        {
                          \"type\": \"mrkdwn\",
