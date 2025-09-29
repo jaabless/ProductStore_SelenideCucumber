@@ -6,6 +6,7 @@ import com.projects.pages.ContactPage;
 import com.projects.util.ContactInfo;
 import com.projects.util.TestDataLoader;
 import io.qameta.allure.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +25,8 @@ public class ContactTest extends BaseTest {
     private final ContactPage contactPage = new ContactPage();
 
     @Test
-    @Story("Valid Submission")
+    @Story("Contact Functionality")
+    @DisplayName("Verify that a user can successfully submit the contact form with valid details.")
     @Severity(SeverityLevel.CRITICAL)
     void testValidContactSubmission() {
         ContactInfo info = TestDataLoader.getContactInfo("valid");
@@ -38,7 +40,8 @@ public class ContactTest extends BaseTest {
     }
 
     @Test
-    @Story("Invalid Email")
+    @Story("Contact Functionality")
+    @DisplayName("Verify that submitting the contact form with an invalid email shows an error.")
     @Severity(SeverityLevel.NORMAL)
     void testInvalidEmailContactSubmission() {
         ContactInfo info = TestDataLoader.getContactInfo("invalid");
