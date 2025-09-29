@@ -37,6 +37,7 @@ public abstract class BaseTest {
         // Optional: screenshot right after opening (for step-level tracking)
         attachScreenshot("Initial Page");
     }
+    //
 
     @AfterEach
     void tearDown() {
