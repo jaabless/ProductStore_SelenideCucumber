@@ -123,6 +123,8 @@ public class CartTest extends BaseTest {
 
     @Test
     @Story("Cart Functionality")
+    @DisplayName("Verify that clicking the 'Place Order' button navigates to the checkout page")
+    @Severity(SeverityLevel.CRITICAL)
     public void verifyPlaceOrderButton() {
         String product = TestDataLoader.getProduct("phone");
 
