@@ -62,10 +62,11 @@ public class CartTest extends BaseTest {
     }
 
     @Test
+    @Story("Cart Functionality")
     @DisplayName("Verify immediate feedback after adding a product to the cart")
     public void verifyAddingProductToCart() {
         String product = TestDataLoader.getProduct("laptop");
-        log.info("Adding '{}' twice", product);
+        log.info("Adding '{}'", product);
         productPage.openProduct(product);
         productPage.addToCart();
         productPage.verifyImmediateFeedback();
