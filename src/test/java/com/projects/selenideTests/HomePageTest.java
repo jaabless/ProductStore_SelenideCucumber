@@ -4,6 +4,7 @@ import com.codeborne.selenide.junit5.ScreenShooterExtension;
 import com.projects.base.BaseTest;
 import com.projects.pages.HomePage;
 import io.qameta.allure.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,9 +23,9 @@ public class HomePageTest extends BaseTest {
     private final HomePage homepage = new HomePage();
 
     @Test
-    @Story("Load Homepage")
+    @Story("Homepage Functionality")
+    @DisplayName("Verify that the homepage loads successfully and displays a list of products without login.")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Verify homepage loads and displays product list")
     void testHomepageLoadsWithProducts() {
         log.info("Opening homepage");
         homepage.open();
@@ -34,9 +35,9 @@ public class HomePageTest extends BaseTest {
     }
 
     @Test
-    @Story("Navigation")
+    @Story("Homepage Functionality")
+    @DisplayName("Verify that navigation links (Home, Contact) are displayed on the homepage.")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Verify navigation links work correctly")
     void testNavigationLinks() {
         log.info("Opening homepage and clicking Contact link");
         homepage.open();
@@ -52,4 +53,31 @@ public class HomePageTest extends BaseTest {
         homepage.clickHome();
         assertTrue(homepage.hasProducts(), "Products should be visible after clicking Home link");
     }
+
+    @Test
+    @Story("Homepage Functionality")
+    @DisplayName("Verify that each product card displays an image, title, and price.")
+    @Severity(SeverityLevel.MINOR)
+    void testProductCardsDisplayInfo() {
+        log.info("Opening homepage to verify product cards");
+        homepage.open();
+        assertTrue(homepage.verifyFirstProductHasNamePriceThumbnail(), "All product cards should display image, title, and price");
+    }
+
+    @Test
+    @Story("Homepage Functionality")
+    @DisplayName("Verify clicking product name redirects to detailed product page")
+    @Severity(SeverityLevel.NORMAL)
+    void testProductLinkNavigation() {
+        String product = homepage.getFirstProductName();
+        log.info("Clicking on product '{}' to navigate to its detail page", product);
+        homepage.open();
+        homepage.clickProduct(product);
+        assertTrue(homepage.addToCartButtonVisible(), "Should navigate to product detail page with Add to Cart button visible");
+    }
+
+
+
+
+
 }
