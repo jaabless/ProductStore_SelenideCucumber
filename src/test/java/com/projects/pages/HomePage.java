@@ -59,14 +59,25 @@ public class HomePage extends BasePage {
         $$(".card-block, .col-lg-4").shouldHave(sizeGreaterThan(0));
     }
 
-    public void verifyFirstProductHasNamePriceThumbnail() {
+    public boolean verifyFirstProductHasNamePriceThumbnail() {
         var firstProduct = $$(".col-lg-4").first();
         firstProduct.$(".card-title, .hrefch").shouldBe(visible);
         firstProduct.$("h5").shouldBe(visible);
         firstProduct.$("img").shouldBe(visible);
+        logger.info("Verified products display name, price, image");
+        return true;
     }
 
     public void clickProduct(String productName) {
         $$(".hrefch").findBy(text(productName)).click();
+        logger.info("Clicked on product: " + productName);
+    }
+
+    public String getFirstProductName() {
+        return $$(".hrefch").first().getText();
+    }
+
+    public boolean addToCartButtonVisible() {
+        return $("a.btn.btn-success.btn-lg").shouldHave(text("Add to cart")).is(visible);
     }
 }
