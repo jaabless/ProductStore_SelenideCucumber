@@ -9,7 +9,7 @@ Feature: Homepage
     Then the homepage should display a list of products
     And at least one product should show name, price and thumbnail
 
-  @regression
+  @smoke
   Scenario Outline: Product details navigation
     Given the user is on the homepage
     When the user clicks the product "<product>"

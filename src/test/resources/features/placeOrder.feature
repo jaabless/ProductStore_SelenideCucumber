@@ -1,8 +1,9 @@
+@regression
 Feature: Place Order (Checkout)
   As a Customer
   I want to place an order so I receive a confirmation
 
-  @regression @checkout
+  @regression
   Scenario Outline: Place order with valid details
     Given the user has 1 item in cart
     When the user fills the order form with name "<name>" and credit card "<cc>"
@@ -14,7 +15,6 @@ Feature: Place Order (Checkout)
       | Collins Adu   | 4242424242424242  |
       | Alice Johnson | 1111222233334444  |
 
-  @regression
   Scenario: Try to place order with invalid credit card
     Given the user has 1 item in cart
     When the user fills the order form with name "Test User" and credit card ""
